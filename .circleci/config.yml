@@ -1,0 +1,27 @@
+version: 2
+
+jobs:
+  publishDashboard:
+    docker:
+      - image: web3f/ci-commons:v2.1.4
+    steps:
+      - checkout
+      - run:
+          name: Publish dashboard
+          command: |
+            curl -X POST \
+              -H "Authorization: Bearer $GRAFANA_API_KEY" \
+              -H "Content-Type: application/json" \
+              -d @polkadot-dashboard.json
+              https://grafana.com/api/dashboards/db
+
+workflows:
+  version: 2
+  test-deploy:
+    jobs:
+      - publishDashboard:
+          filters:
+            tags:
+              only: /v[0-9]+(\.[0-9]+)*/
+            branches:
+              ignore: /.*/
